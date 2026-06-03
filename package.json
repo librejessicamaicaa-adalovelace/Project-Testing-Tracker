@@ -4,6 +4,7 @@
   "description": "A shared project task tracker with server-side persistence for multiple users and computers.",
   "main": "server.js",
   "scripts": {
+    "build": "echo Static site ready",
     "start": "node server.js"
   },
   "license": "MIT"
