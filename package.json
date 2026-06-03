@@ -1,0 +1,10 @@
+{
+  "name": "shared-project-task-tracker",
+  "version": "1.0.0",
+  "description": "A shared project task tracker with server-side persistence for multiple users and computers.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}

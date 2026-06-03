@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Task Tracker</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">PT</div>
+          <div>
+            <h1>Project Tracker</h1>
+            <p>Shared task board</p>
+          </div>
+        </div>
+
+        <section class="quick-stats" aria-label="Task summary">
+          <div>
+            <span id="countTotal">0</span>
+            <small>Total</small>
+          </div>
+          <div>
+            <span id="countProgress">0</span>
+            <small>Active</small>
+          </div>
+          <div>
+            <span id="countDone">0</span>
+            <small>Done</small>
+          </div>
+        </section>
+
+        <nav class="status-tabs" aria-label="Status filter">
+          <button class="active" data-status="All">All</button>
+          <button data-status="To Do">To Do</button>
+          <button data-status="In Progress">In Progress</button>
+          <button data-status="Blocked">Blocked</button>
+          <button data-status="Done">Done</button>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <h2>Team Tasks</h2>
+            <p id="connectionText">Connect Supabase to start sharing tasks</p>
+          </div>
+          <button id="refreshBtn" class="icon-button" title="Refresh tasks" aria-label="Refresh tasks">
+            <span aria-hidden="true">R</span>
+          </button>
+        </header>
+
+        <section class="task-form-panel">
+          <form id="taskForm">
+            <input type="hidden" id="taskId">
+            <div class="form-grid">
+              <label>
+                <span>Task</span>
+                <input id="title" maxlength="160" required placeholder="Add a task">
+              </label>
+              <label>
+                <span>Project</span>
+                <input id="project" maxlength="80" placeholder="Project name">
+              </label>
+              <label>
+                <span>Owner</span>
+                <input id="owner" maxlength="80" placeholder="Assigned user">
+              </label>
+              <label>
+                <span>Status</span>
+                <select id="status">
+                  <option>To Do</option>
+                  <option>In Progress</option>
+                  <option>Blocked</option>
+                  <option>Done</option>
+                </select>
+              </label>
+              <label>
+                <span>Priority</span>
+                <select id="priority">
+                  <option>Low</option>
+                  <option selected>Medium</option>
+                  <option>High</option>
+                  <option>Urgent</option>
+                </select>
+              </label>
+              <label>
+                <span>Due Date</span>
+                <input id="dueDate" type="date">
+              </label>
+            </div>
+            <label class="notes-field">
+              <span>Notes</span>
+              <textarea id="notes" rows="3" maxlength="1000" placeholder="Details, blockers, or next steps"></textarea>
+            </label>
+            <div class="form-actions">
+              <button type="button" id="cancelEditBtn" class="secondary hidden">Cancel</button>
+              <button type="submit" id="saveBtn">Add Task</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="toolbar">
+          <label class="search-box">
+            <span>Search</span>
+            <input id="searchInput" placeholder="Task, project, owner, notes">
+          </label>
+          <label>
+            <span>Sort</span>
+            <select id="sortSelect">
+              <option value="updatedAt">Recently updated</option>
+              <option value="dueDate">Due date</option>
+              <option value="priority">Priority</option>
+              <option value="project">Project</option>
+            </select>
+          </label>
+        </section>
+
+        <section id="taskList" class="task-list" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <template id="taskTemplate">
+      <article class="task-card">
+        <div class="task-card-main">
+          <div class="task-title-row">
+            <h3></h3>
+            <span class="priority-pill"></span>
+          </div>
+          <div class="task-meta"></div>
+          <p class="task-notes"></p>
+        </div>
+        <div class="task-actions">
+          <select class="status-picker" aria-label="Change task status">
+            <option>To Do</option>
+            <option>In Progress</option>
+            <option>Blocked</option>
+            <option>Done</option>
+          </select>
+          <button class="secondary edit-btn">Edit</button>
+          <button class="danger delete-btn">Delete</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
