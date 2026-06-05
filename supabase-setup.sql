@@ -9,9 +9,17 @@ create table if not exists public.tasks (
   priority text not null default 'Medium' check (priority in ('Low', 'Medium', 'High', 'Urgent')),
   due_date date,
   notes text not null default '' check (char_length(notes) <= 1000),
+  remarks text not null default '' check (char_length(remarks) <= 1000),
+  attachment_name text,
+  attachment_path text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.tasks
+add column if not exists attachment_name text,
+add column if not exists attachment_path text,
+add column if not exists remarks text not null default '';
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -56,4 +64,47 @@ on public.tasks for delete
 to anon
 using (true);
 
-alter publication supabase_realtime add table public.tasks;
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('task-attachments', 'task-attachments', true, 10485760)
+on conflict (id) do update
+set public = true,
+    file_size_limit = 10485760;
+
+drop policy if exists "Public can read task attachments" on storage.objects;
+create policy "Public can read task attachments"
+on storage.objects for select
+to anon
+using (bucket_id = 'task-attachments');
+
+drop policy if exists "Public can upload task attachments" on storage.objects;
+create policy "Public can upload task attachments"
+on storage.objects for insert
+to anon
+with check (bucket_id = 'task-attachments');
+
+drop policy if exists "Public can update task attachments" on storage.objects;
+create policy "Public can update task attachments"
+on storage.objects for update
+to anon
+using (bucket_id = 'task-attachments')
+with check (bucket_id = 'task-attachments');
+
+drop policy if exists "Public can delete task attachments" on storage.objects;
+create policy "Public can delete task attachments"
+on storage.objects for delete
+to anon
+using (bucket_id = 'task-attachments');
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'tasks'
+  ) then
+    alter publication supabase_realtime add table public.tasks;
+  end if;
+end;
+$$;
